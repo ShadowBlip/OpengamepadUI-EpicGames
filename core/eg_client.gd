@@ -2,13 +2,13 @@ extends NodeThread
 
 ## Godot interface for wyvern
 ##
-## Provides a Godot interface to the wyvern command. This class relies on 
+## Provides a Godot interface to the legendary CLI. This class relies on 
 ## [InteractiveProcess] to spawn wyvern in a psuedo terminal to read and write 
 ## to its stdout/stdin.
-
-const wyvern_url := "https://git.sr.ht/%7Enicohman/wyvern/archive/1.4.1.tar.gz"
-const wyvern_dir := "user://plugins/gog-library/assets"
-const CACHE_DIR := "gog"
+const legendary_version := "0.20.32"
+const legendary_url := "https://github.com/derrod/legendary/archive/"+legendary_version+".tar.gz"
+const legendary_dir := "user://plugins/eg-library/assets"
+const CACHE_DIR := "epicgames"
 
 enum STATE {
 	BOOT,
@@ -23,7 +23,7 @@ enum LOGIN_STATUS {
 	TFA_REQUIRED,
 }
 
-# gog thread signals
+# eg thread signals
 signal command_finished(cmd: String, output: Array[String])
 signal command_progressed(cmd: String, output: Array[String], finished: bool)
 signal prompt_available
@@ -42,13 +42,13 @@ var state: STATE = STATE.BOOT
 var is_logged_in := false
 var client_started := false 
 
-var logger := Log.get_logger("GOGClient", Log.LEVEL.INFO)
+var logger := Log.get_logger("EGClient", Log.LEVEL.INFO)
 
 
 func _ready() -> void:
-	add_to_group("gog_client")
+	add_to_group("eg_client")
 	thread_group = SharedThread.new()
-	thread_group.name = "gogClient"
+	thread_group.name = "egClient"
 
 
 ## Download wyvern to the user directory
@@ -56,8 +56,8 @@ func install_wyvern() -> bool:
 	# Build the request
 	var http: HTTPRequest = HTTPRequest.new()
 	add_child(http)
-	if http.request(wyvern_url) != OK:
-		logger.error("Error downloading wyvern: " + wyvern_url)
+	if http.request(legendary_url) != OK:
+		logger.error("Error downloading wyvern: " + legendary_url)
 		remove_child(http)
 		http.queue_free()
 		return false
@@ -72,22 +72,22 @@ func install_wyvern() -> bool:
 	http.queue_free()
 	
 	if result != HTTPRequest.RESULT_SUCCESS or response_code != 200:
-		logger.error("wyvern couldn't be downloaded: " + wyvern_url)
+		logger.error("wyvern couldn't be downloaded: " + legendary_url)
 		return false
 	
 	# Save the archive
-	var file := FileAccess.open("/tmp/wyvern_linux.tar.gz", FileAccess.WRITE_READ)
+	var file := FileAccess.open("/tmp/"+legendary_version+".tar.gz", FileAccess.WRITE_READ)
 	file.store_buffer(body)
 
 	# Extract the archive
-	DirAccess.make_dir_recursive_absolute(wyvern_dir)
+	DirAccess.make_dir_recursive_absolute(legendary_dir)
 	var out := []
-	OS.execute("tar", ["xvfz", "/tmp/wyvern_linux.tar.gz", "-C", wyvern_dir], out)
+	OS.execute("tar", ["xvfz", "/tmp/"+legendary_version+".tar.gz", "-C", legendary_dir], out)
 
 	return true
 
 
-## Log in to gog. This method will fire the 'logged_in' signal with the login 
+## Log in to eg. This method will fire the 'logged_in' signal with the login 
 ## status. This should be called again if TFA is required.
 func login(user: String, password := "", tfa := "") -> void:
 	await thread_group.exec(_login.bind(user, password, tfa))
@@ -97,7 +97,7 @@ func _login(user: String, password := "", tfa := "") -> void:
 	pass
 
 
-## Log the user out of gog
+## Log the user out of eg
 func logout() -> void:
 	await thread_group.exec(_logout)
 
@@ -107,8 +107,6 @@ func _logout() -> void:
 
 
 ## Returns an array of installed apps
-## E.g. [{"id": "1779200", "name": "Thrive", "path": "~/.local/share/gog/gogapps/common/Thrive"}]
-#wyvern +login <user> +apps_installed +quit
 func get_installed_apps() -> Array[Dictionary]:
 	return await thread_group.exec(_get_installed_apps)
 

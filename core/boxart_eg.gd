@@ -27,12 +27,12 @@ func _init() -> void:
 	# Create the data directory if it doesn't exist
 	DirAccess.make_dir_recursive_absolute(_boxart_dir)
 	provider_id = "gog"
-	logger_name = "BoxArtGOG"
+	logger_name = "BoxArtEG"
 
 
 func _ready() -> void:
 	super()
-	logger.info("GOG BoxArt provider loaded")
+	logger.info("EG BoxArt provider loaded")
 	logger._level = Log.LEVEL.INFO
 
 

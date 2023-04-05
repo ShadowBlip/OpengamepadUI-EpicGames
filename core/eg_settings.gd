@@ -1,9 +1,9 @@
 extends Control
 
-const GOGClient := preload("res://plugins/gog-library/core/gog_client.gd")
+const EGClient := preload("res://plugins/template/core/eg_client.gd")
 const SettingsManager := preload("res://core/global/settings_manager.tres")
 const NotificationManager := preload("res://core/global/notification_manager.tres")
-const icon := preload("res://plugins/gog-library/assets/gog.svg")
+const icon := preload("res://plugins/template/assets/epic-games.svg")
 
 @onready var status := $%Status
 @onready var connected_status := $%ConnectedStatus
@@ -13,12 +13,12 @@ const icon := preload("res://plugins/gog-library/assets/gog.svg")
 @onready var tfa_box := $%TFATextInput
 @onready var login_button := $%LoginButton
 
-@onready var gog: GOGClient = get_tree().get_first_node_in_group("gog_client")
+@onready var gog: EGClient = get_tree().get_first_node_in_group("eg_client")
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# If we have logged in before, populate the username box
-	var user := SettingsManager.get_value("plugin.gog", "user", "") as String
+	var user := SettingsManager.get_value("plugin.eg", "user", "") as String
 	user_box.text = user
 
 	# Set the status label based on the gog client status
@@ -40,8 +40,8 @@ func _ready() -> void:
 	gog.client_ready.connect(_on_client_ready)
 	
 	# Set our label if we log in
-	var update_login_status := func(gog_status: GOGClient.LOGIN_STATUS):
-		if gog_status != GOGClient.LOGIN_STATUS.OK:
+	var update_login_status := func(eg_status: EGClient.LOGIN_STATUS):
+		if eg_status != EGClient.LOGIN_STATUS.OK:
 			logged_in_status.status = logged_in_status.STATUS.ACTIVE
 			logged_in_status.color = "gray"
 			return
@@ -69,15 +69,15 @@ func _on_client_ready() -> void:
 	connected_status.color = "green"
 
 
-func _on_login(login_status: GOGClient.LOGIN_STATUS) -> void:
+func _on_login(login_status: EGClient.LOGIN_STATUS) -> void:
 	# Un-hide the 2fa box if we require two-factor auth
-	if login_status == GOGClient.LOGIN_STATUS.TFA_REQUIRED:
+	if login_status == EGClient.LOGIN_STATUS.TFA_REQUIRED:
 		tfa_box.visible = true
 		tfa_box.grab_focus.call_deferred()
 		return
 
 	# If we logged, woo!
-	if login_status == GOGClient.LOGIN_STATUS.OK:
+	if login_status == EGClient.LOGIN_STATUS.OK:
 		logged_in_status.status = logged_in_status.STATUS.CLOSED
 		logged_in_status.color = "green"
 		return

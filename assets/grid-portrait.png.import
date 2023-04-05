@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d38v3jhksg027"
-path="res://.godot/imported/grid-portrait.png-dae940c6df1f4f35fb4b507a929b37eb.ctex"
+path="res://.godot/imported/grid-portrait.png-399659e705d00eeaf7a72c521e629809.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://plugins/gog-library/assets/grid-portrait.png"
-dest_files=["res://.godot/imported/grid-portrait.png-dae940c6df1f4f35fb4b507a929b37eb.ctex"]
+source_file="res://plugins/template/assets/grid-portrait.png"
+dest_files=["res://.godot/imported/grid-portrait.png-399659e705d00eeaf7a72c521e629809.ctex"]
 
 [params]
 

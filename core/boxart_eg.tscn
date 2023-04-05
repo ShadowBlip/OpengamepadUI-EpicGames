@@ -2,5 +2,5 @@
 
 [ext_resource type="Script" path="res://plugins/gog-library/core/boxart_gog.gd" id="1_uku4o"]
 
-[node name="BoxArtGOG" type="Node"]
+[node name="BoxArtEG" type="Node"]
 script = ExtResource("1_uku4o")

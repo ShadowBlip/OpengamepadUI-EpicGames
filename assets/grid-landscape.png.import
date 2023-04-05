@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ouvl3jnikxx"
-path="res://.godot/imported/grid-landscape.png-0b8067176a08d699f52818e256caae8b.ctex"
+path="res://.godot/imported/grid-landscape.png-4edfb7f496f46b637f1a7ba4fa0f2c1c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://plugins/gog-library/assets/grid-landscape.png"
-dest_files=["res://.godot/imported/grid-landscape.png-0b8067176a08d699f52818e256caae8b.ctex"]
+source_file="res://plugins/template/assets/grid-landscape.png"
+dest_files=["res://.godot/imported/grid-landscape.png-4edfb7f496f46b637f1a7ba4fa0f2c1c.ctex"]
 
 [params]
 

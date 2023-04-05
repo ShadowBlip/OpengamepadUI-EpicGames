@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://jka6axnphxc3"
-path="res://.godot/imported/gog.svg-00754efa013bd0e00f51378d761d3e35.ctex"
+uid="uid://o041a8vn87cg"
+path="res://.godot/imported/epic-games.svg-756932a05212c2b7fed8b91b88ddff56.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://plugins/gog-library/assets/gog.svg"
-dest_files=["res://.godot/imported/gog.svg-00754efa013bd0e00f51378d761d3e35.ctex"]
+source_file="res://plugins/template/assets/epic-games.svg"
+dest_files=["res://.godot/imported/epic-games.svg-756932a05212c2b7fed8b91b88ddff56.ctex"]
 
 [params]
 

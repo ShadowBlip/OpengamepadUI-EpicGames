@@ -1,9 +1,9 @@
 extends Library
 
-const GOGClient := preload("res://plugins/gog-library/core/gog_client.gd")
+const EGClient := preload("res://plugins/template/core/eg_client.gd")
 const _apps_cache_file: String = "apps.json"
 
-@onready var gog: GOGClient = get_tree().get_first_node_in_group("gog_client")
+@onready var eg: EGClient = get_tree().get_first_node_in_group("eg_client")
 
 
 # Called when the node enters the scene tree for the first time.
@@ -11,7 +11,7 @@ func _ready() -> void:
 	super()
 	logger = Log.get_logger("GOG", Log.LEVEL.DEBUG)
 	logger.info("GOG Library loaded")
-	gog.logged_in.connect(_on_logged_in)
+	eg.logged_in.connect(_on_logged_in)
 
 
 # Return a list of installed gog apps. Called by the LibraryManager.
@@ -24,7 +24,7 @@ func install(item: LibraryLaunchItem) -> void:
 	# Start the install
 	var app_id := item.provider_app_id
 	logger.info("Installing " + item.name + " with app ID: " + app_id)
-	gog.install(app_id)
+	eg.install(app_id)
 
 	# Connect to progress updates
 	var on_progress := func(id: String, bytes_cur: int, bytes_total: int):
@@ -35,20 +35,20 @@ func install(item: LibraryLaunchItem) -> void:
 		if bytes_total == 0:
 			progress = 0
 		install_progressed.emit(item, progress)
-	gog.install_progressed.connect(on_progress)
+	eg.install_progressed.connect(on_progress)
 
 	# Wait for the app_installed signal
 	var success := false
 	var installed_app := ""
 	while installed_app != app_id:
-		var results = await gog.app_installed
+		var results = await eg.app_installed
 		installed_app = results[0]
 		success = results[1]
 	install_completed.emit(item, success)
 	logger.info("Install of " + item.name + " completed with status: " + str(success))
 
 	# Disconnect from progress updates 
-	gog.install_progressed.disconnect(on_progress)
+	eg.install_progressed.disconnect(on_progress)
 
 
 # Updates the given library item.
@@ -56,7 +56,7 @@ func update(item: LibraryLaunchItem) -> void:
 	# Start the install
 	var app_id := item.provider_app_id
 	logger.info("Updating " + item.name + " with app ID: " + app_id)
-	gog.install(app_id)
+	eg.install(app_id)
 
 	# Connect to progress updates
 	var on_progress := func(id: String, bytes_cur: int, bytes_total: int):
@@ -64,20 +64,20 @@ func update(item: LibraryLaunchItem) -> void:
 			return
 		logger.info("Update progressing: " + str(bytes_cur) + "/" + str(bytes_total))
 		install_progressed.emit(item, float(bytes_total)/float(bytes_cur))
-	gog.install_progressed.connect(on_progress)
+	eg.install_progressed.connect(on_progress)
 
 	# Wait for the app_updated signal
 	var success := false
 	var installed_app := ""
 	while installed_app != app_id:
-		var results = await gog.app_updated
+		var results = await eg.app_updated
 		installed_app = results[0]
 		success = results[1]
 	update_completed.emit(item, success)
 	logger.info("Update of " + item.name + " completed with status: " + str(success))
 
 	# Disconnect from progress updates 
-	gog.install_progressed.disconnect(on_progress)
+	eg.install_progressed.disconnect(on_progress)
 
 
 # Uninstalls the given library item.
@@ -85,13 +85,13 @@ func uninstall(item: LibraryLaunchItem) -> void:
 	# Start the uninstall
 	var app_id := item.provider_app_id
 	logger.info("Uninstalling " + item.name + " with app ID: " + app_id)
-	gog.uninstall(app_id)
+	eg.uninstall(app_id)
 
 	# Wait for the app_uninstalled signal
 	var success := false
 	var installed_app := ""
 	while installed_app != app_id:
-		var results = await gog.app_uninstalled
+		var results = await eg.app_uninstalled
 		installed_app = results[0]
 		success = results[1]
 	uninstall_completed.emit(item, success)
@@ -104,8 +104,8 @@ func has_update(item: LibraryLaunchItem) -> bool:
 
 
 # Re-load our library when we've logged in
-func _on_logged_in(status: GOGClient.LOGIN_STATUS):
-	if status != GOGClient.LOGIN_STATUS.OK:
+func _on_logged_in(status: EGClient.LOGIN_STATUS):
+	if status != EGClient.LOGIN_STATUS.OK:
 		return
 
 	# Upon login, fetch the user's library without loading it from cache and
@@ -144,11 +144,11 @@ func _load_library(
 			return items
 
 	# Wait for the gog client if it's not ready
-	if gog.state == gog.STATE.BOOT:
+	if eg.state == eg.STATE.BOOT:
 		logger.info("GOG client is not ready yet.")
 		return []
 
-	if not gog.is_logged_in:
+	if not eg.is_logged_in:
 		logger.info("GOG client is not logged in yet.")
 		return []
 
@@ -156,7 +156,7 @@ func _load_library(
 	# Get all available apps
 	var app_ids: PackedInt64Array = await _get_available_apps()
 	var app_info: Dictionary = await _get_app_info(app_ids)
-	var apps_installed: Array = await gog.get_installed_apps()
+	var apps_installed: Array = await eg.get_installed_apps()
 	var app_ids_installed := PackedStringArray()
 	for app in apps_installed:
 		app_ids_installed.append(app["id"])
@@ -188,7 +188,7 @@ func _load_library(
 
 # Returns an array of available gogAppIds
 func _get_available_apps() -> Array:
-	var app_ids = await gog.get_available_apps()
+	var app_ids = await eg.get_available_apps()
 	return app_ids
 
 
@@ -197,7 +197,7 @@ func _get_app_info(app_ids: Array) -> Dictionary:
 	var app_info := {}
 	for app_id in app_ids:
 		var id := str(app_id)
-		var info := await gog.get_app_info(id)
+		var info := await eg.get_app_info(id)
 		if not id in info:
 			continue
 		if not "common" in info[id]:
