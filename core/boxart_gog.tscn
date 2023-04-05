@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bvfgou3n0bicr"]
+
+[ext_resource type="Script" path="res://plugins/gog-library/core/boxart_gog.gd" id="1_uku4o"]
+
+[node name="BoxArtGOG" type="Node"]
+script = ExtResource("1_uku4o")
